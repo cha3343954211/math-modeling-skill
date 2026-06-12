@@ -1,0 +1,30 @@
+# Paper Search 默认配置
+# OpenAlex 无需 API Key；email 用于 Polite Pool / User-Agent。
+# AnySearch API Key 可选，不要写入本文件；如需使用，通过环境变量 ANYSEARCH_API_KEY 临时提供。
+
+openalex:
+  base_url: https://api.openalex.org
+  email: "your-email@example.com"
+
+anysearch:
+  endpoint: https://api.anysearch.com/mcp
+  api_key_env: ANYSEARCH_API_KEY
+  anonymous_allowed: true
+
+hybrid_scholar:
+  default_limit: 8
+  dedup:
+    doi_exact: true
+    title_fuzzy_threshold: 0.7
+  output:
+    json: true
+    sections:
+      - cross_validated
+      - openalex_only
+      - anysearch_only
+
+logging:
+  literature_search_log: 支撑材料/references/literature_search_log.md
+  literature_candidates_json: 支撑材料/references/literature_candidates.json
+  accepted_literature: 支撑材料/references/literature.md
+  rejected_literature: 支撑材料/references/literature_rejected.md
