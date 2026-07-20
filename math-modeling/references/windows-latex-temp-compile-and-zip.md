@@ -39,8 +39,8 @@
    ```
 6. **复制最终 PDF 回正式目录**：
    ```bash
-   cp /e/hermes_tmp_a_paper/paper.pdf '<PROJECT_PATH>/支撑材料/papper/论文.pdf'
-   pdfinfo '<PROJECT_PATH>/支撑材料/papper/论文.pdf' | grep Pages
+   cp /e/hermes_tmp_a_paper/paper.pdf 'F:/.../支撑材料/papper/论文.pdf'
+   pdfinfo 'F:/.../支撑材料/papper/论文.pdf' | grep Pages
    ```
 7. **只有最终 PDF 复制回正式目录后才打包/发送**。
 
@@ -51,8 +51,8 @@
 ```python
 from pathlib import Path
 import zipfile
-root = Path('<PROJECT_PATH>/支撑材料')
-zip_path = Path('<PROJECT_PATH>/论文与支撑材料.zip')
+root = Path('F:/.../支撑材料')
+zip_path = Path('F:/.../论文与支撑材料.zip')
 with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as z:
     for p in root.rglob('*'):
         if p.is_file():
@@ -75,5 +75,19 @@ with zipfile.ZipFile(zip_path) as z:
 ## 质量门控补充
 
 - LaTeX 编译日志中若出现 `Unable to load picture`，即使生成了部分 PDF，也视为 L3 不通过。
-- 编译后必须用 `pdfinfo` 核验页数，数学建模正式论文正文仍按不少于 15 页要求执行。
-- MiKTeX 的“未检查更新”提示属于环境提示，不等价于编译失败；以 exit code、缺图错误、未定义引用和 PDF 页数作为交付判断依据。
+- 编译后必须用 `pdfinfo` 或 `pypdf` 核验页数，数学建模正式论文正文仍按不少于 15 页要求执行。
+- MiKTeX 的"未检查更新"提示属于环境提示，不等价于编译失败；以 exit code、缺图错误、未定义引用和 PDF 页数作为交付判断依据。
+
+## TOC 页数核验模式
+
+编译后检查目录页是否溢出，用 pypdf 提取目录页文本：
+```python
+from pypdf import PdfReader
+r = PdfReader(r'C:\tmp\bpaper\论文.pdf')
+p2 = r.pages[1].extract_text()  # 目录通常在第2页
+p3 = r.pages[2].extract_text()
+# 如果 page 3 开头仍含目录条目（如"附录""结论"），说明目录溢出
+is_overflow = '附录' in p3[:200] or '结论' in p3[:200]
+print(f'TOC overflow: {is_overflow}')
+```
+溢出时的压缩优先级：`\scriptsize` 字体 → 负间距 `\cftbeforesubsecskip=-1pt` → `\baselinestretch{0.85}` → 降级 `tocdepth`。

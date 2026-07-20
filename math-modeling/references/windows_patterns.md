@@ -12,7 +12,7 @@ plt.savefig('/e/数学建模文件夹/results/chart.png')
 
 **正确写法**：
 ```python
-plt.savefig('<MATH_MODELING_ARCHIVE>文件夹/results/chart.png')
+plt.savefig('E:/数学建模文件夹/results/chart.png')
 ```
 
 ### 终端路径

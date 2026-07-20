@@ -6,7 +6,7 @@
 where pdflatex
 where xelatex
 # 常见路径：
-# <USER_HOME>\AppData\Local\Programs\MiKTeX\miktex\bin\x64\
+# C:\Users\Admin\AppData\Local\Programs\MiKTeX\miktex\bin\x64\
 # D:\texlive\2025\bin\windows\
 ```
 
