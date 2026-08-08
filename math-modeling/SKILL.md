@@ -1,7 +1,7 @@
 ---
 name: math-modeling
 description: "数学建模竞赛全流程自动化：问题分析、模型构建、代码实现、论文写作、可视化。支持CUMCM/MCM/ICM等主流赛事。"
-version: 6.3.0
+version: 6.4.0
 author: MiMo V2.5 Pro + Capoo
 metadata:
   hermes:
@@ -9,7 +9,7 @@ metadata:
     related_skills: [data-science, software-development, creative]
 ---
 
-# 数学建模 Skill v6.3
+# 数学建模 Skill v6.4
 
 ## 适用场景
 
@@ -50,6 +50,9 @@ metadata:
 6. **工作区**：默认 `E:\HermesE`；项目目录优先用用户指定路径
 7. **不弹窗**：所有 Python 可视化脚本必须 savefig+close
 8. **不探查 SkillHub**：做数学建模时，外部资料探查用 GitHub/论文/官方文档，不要把 SkillHub 作为建模前资料侦察步骤
+9. **论文篇幅与格式硬规范**：竞赛论文必须满足——①正文（问题重述至模型评价结束，不含摘要/目录/参考文献/附录）**18~25页**，不足18页必须扩充分析/验证/图表解读/灵敏度实质内容，超过25页必须精简；②附录（代码/支撑说明）**不限页数**；③**第1页为摘要页，严格限定1页**（300~800字，含方法+关键数字+稳健性结论），不得跨页；④**第2页起为目录**，强制只占1页，目录**保留到二级标题**，通过调整行距（如\setstretch{1.0}）、字号（如\small）、tocdepth=2 压至1页；⑤页码从**正文起标1**（默认），摘要页与目录页不标页码或标罗马数字（\pagenumbering{gobble}→正文\pagenumbering{arabic}\setcounter{page}{1}）；⑥禁止靠加图加表凑页数
+10. **每次必写论文**：任何等级的数学建模任务（L1/L2/L3）完成后必须产出论文，不允许只交代码或只给结论；L1可简化为课程报告级，L2/L3按竞赛标准完整写作
+11. **完成必Review**：整个数学建模问题求解+论文完成后，必须执行一次完整Review（走 Step 6），检查模型合理性、结果正确性、数字一致性、逻辑闭环，并输出 review 记录；Review 发现问题必须修复后才能交付
 
 ---
 
@@ -85,6 +88,8 @@ metadata:
 - [ ] 每个子问题有"问题要求→模型→求解→结果→解释→检验"完整链
 - [ ] 所有图表有编号、单位、正文引用和2-4句解读
 - [ ] 论文数字与代码/frozen_numbers一致，无手工改数
+- [ ] 论文正文页数 18~25页（问题重述至模型评价结束），不足18页或超25页均已调整；附录不限页数
+- [ ] 摘要严格1页（第1页），目录严格1页（第2页，保留二级标题）；页码从正文标1，摘要页不标页码
 - [ ] 参考文献与外部事实可追溯、格式统一；附录/支撑材料含核心代码和复现说明（均以赛事规则卡为准）
 - [ ] 已按当年赛事的格式、页数、语言、匿名、附件与提交方式完成检查；没有通用页数或文献数量替代官方要求
 - [ ] 在干净环境或独立目录完成一次从输入到表格/图表的复跑，确认论文关键数字可再生
@@ -99,7 +104,7 @@ metadata:
 
 ---
 
-## 🔄 工作流主干（5步）
+## 🔄 工作流主干（6步）
 
 ### Step 1：审题与解析
 
@@ -149,6 +154,64 @@ metadata:
 - 每个关键结果用"数值+对比+含义"三段式
 - LaTeX 模板见 `templates/latex_template_cn.tex`
 - 支撑材料按 `references/supporting_materials_layout_v5_0.md` 组织
+
+### Step 5.1 页码与摘要/目录格式实现（硬规则第9条）
+
+LaTeX 默认从第1页连续编号，竞赛要求摘要页/目录页不标页码、正文从1开始。实现方式：
+
+```latex
+% ===== 导言区（preamble）: 目录压缩设置放这里 =====
+\usepackage{tocloft}
+\setcounter{tocdepth}{2}                    % 目录显示到二级标题
+\renewcommand{\cftbeforesecskip}{2pt}       % 压缩条目间距
+
+% ===== 摘要页（第1页，不标页码）=====
+\thispagestyle{empty}
+\begin{abstract}...\end{abstract}
+\newpage
+
+% ===== 目录（单独1页，压缩字号行距保证1页）=====
+\thispagestyle{empty}
+\begingroup
+\renewcommand{\baselinestretch}{1.0}
+\small
+\tableofcontents
+\endgroup
+\newpage
+
+% ===== 正文页码从1开始: 正文首节前设置 =====
+\setcounter{page}{1}
+```
+
+若目录超1页：进一步缩小字号（\footnotesize）、`\setlength{\cftbeforesecskip}{2pt}`（需tocloft）或手工删减长标题。摘要超1页：压缩背景与套话，保留方法+关键数字+结论。正文<18页：扩充模型推导/验证/图表解读/灵敏度；>25页：合并冗余小节、精简图表解读。
+
+### Step 6：整体Review（每次必做）
+
+全部子问题求解与论文完成后，逐项执行以下Review，输出 `review_checklist.md` 并修复发现的问题：
+
+**A. 模型合理性检查**
+- [ ] 每个子问题的模型选择是否与题型匹配（评价/预测/优化/仿真）？有无更简单但同效的模型被忽略？
+- [ ] 关键假设是否在正文中明确列出，且每条假设都能追溯至对应公式/代码？
+- [ ] 递进式题目是否保持了 Q1→Q2→Q3 的变量/条件继承？有无割裂重建？
+
+**B. 结果正确性检查**
+- [ ] 所有关键数字都能从代码运行结果追溯到（对比 frozen_numbers.json 与论文/表格/图表）？有无手填数字？
+- [ ] 数量级是否合理（如产能、成本、损耗率量纲正确）？
+- [ ] 优化结果是否检查过约束逐条满足、求解器状态？启发式是否未冒充全局最优？
+- [ ] 预测/评价/排序类结果是否检查过验证协议（时间外验证、权重扰动、排名稳定性）？
+
+**C. 逻辑闭环检查**
+- [ ] 每问是否都有"问题要求→模型→求解→结果→解释→检验"完整链？
+- [ ] 摘要是否覆盖所有子问题且含具体方法名+关键数字？
+- [ ] 正文图表是否都有编号、单位、引用和2-4句解读？
+- [ ] 结论是否超出证据边界（把相关当因果、把拟合当外推预测）？
+
+**D. 交付完整性检查**
+- [ ] 论文篇幅满足硬规则第9条：正文18~25页、摘要1页、目录1页（二级标题）、页码从正文标1
+- [ ] 竞赛是否按当年官方格式/页数/匿名/附件要求完成？
+- [ ] 支撑材料（附件A/B、代码、数据）是否齐全且可复现？
+
+Review 不通过项必须回退修复（参考三阶段回退表），修复后复跑相关代码/编译，确认数字一致后才交付。
 
 ---
 
@@ -202,7 +265,7 @@ metadata:
 
 ---
 
-## ⚠️ Top 10 坑（高频致命错误）
+## ⚠️ Top 13 坑（高频致命错误）
 
 1. **先写结果后补模型** → 论文逻辑倒置，直接降档
 2. **没有 baseline 就宣称更优** → 无法证明模型价值
@@ -231,9 +294,12 @@ metadata:
 | `references/paper_writing_guide.md` | 论文逐模块写作规范+模板 | Step 5 写论文时 |
 | `references/paper_quality_checklist.md` | 论文格式/篇幅/质量检查清单 | Phase 3 最终检查时 |
 | `references/latex_guide.md` | LaTeX编译+目录控制+常见问题 | 编译PDF时 |
+| `references/latex_windows_patterns.md` | Windows LaTeX 环境检查与编译模式 | MiKTeX/TeXLive 环境排查时 |
+| `references/windows-latex-temp-compile-and-zip.md` | 中文路径下 LaTeX 稳健编译与打包 | 项目路径含中文/空格导致编译失败时 |
 | `references/visualization_guide.md` | 可视化规范+字体+图表命名 | 画图时 |
 | `references/windows_patterns.md` | Windows路径/字体/Excel读取 | 遇到环境问题时 |
-| `references/supporting_materials_layout_v5_0.md` | 支撑材料目录结构 | 打包交付时 |
+| `references/project_directory_and_packing_pitfalls.md` | 文件落盘与打包踩坑记录 | 建项目目录/打包交付时 |
+| `references/supporting_materials_layout_v5_0.md` | 支撑材料目录结构（v5.0 精简版） | 打包交付时 |
 | `references/gemini_assisted_modeling.md` | Gemini辅助建模流程 | 需要外部AI协助时 |
 
 ### 案例参考（特定题型时加载）
@@ -242,6 +308,11 @@ metadata:
 |------|------|
 | `references/water_quality_case.md` | 水质/供水类题目经验 |
 | `references/air_quality_analysis.md` | 空气质量分析案例 |
+| `references/oil_tank_calibration_case.md` | 储油罐变位识别/罐容表标定（几何+标定类） |
+
+### 案例库（cases/）
+
+本地私有案例库（60+个国赛/校赛/APMCM 复盘记录，含真实路径与内部踩坑），**仅本地保留，不随公开版发布**。做题前请先在本地 `cases/` 目录按题型检索同类题经验。
 
 ### 竞赛攻略（正式竞赛时加载）
 
@@ -255,15 +326,19 @@ metadata:
 | 文件 | 内容 |
 |------|------|
 | `scripts/math_modeling_utils.py` | 优化/统计/预测/评价/可视化工具库 |
-| `templates/latex_template_cn.tex` | 中文LaTeX论文模板 |
+| `scripts/advanced_visualization_templates.py` | 高级可视化模板（依赖 matplotlib+numpy） |
+| `scripts/hybrid_scholar.py` | 论文检索融合（OpenAlex+AnySearch 交叉验证） |
+| `scripts/anysearch_academic.py` | AnySearch 学术检索 |
+| `scripts/openalex_scholar.py` | OpenAlex 学术检索（无需API Key） |
+| `templates/latex_template_cn.tex` | 中文LaTeX论文模板（已内置硬规则9页码/目录控制） |
 | `templates/paper_template.tex` | 英文论文模板 |
 | `templates/paper_search_config.yaml` | 论文检索配置 |
+| `templates/supporting_materials_README.md` | 支撑材料说明模板 |
+| `references/legacy-ppt-conversion.md` | 旧版 .ppt→.pptx 转换（PowerPoint COM） |
 
 ---
 
-## IMA 知识库
+## IMA 知识库（可选，本地配置）
 
-**知识库名称**：数学建模2026
-**知识库 ID**：`cw0vzkonAnWnUx1GR_nB4Hg0e9iYkipcEw6a1BTE-w8=`
+本地版 Skill 关联私有 IMA 知识库「数学建模2026」用于案例检索；公开版不包含私有知识库 ID，如本地使用请自行配置。
 
-查询时机：审题阶段查类似题解法；方法选择阶段查算法实现；论文阶段查优秀论文结构。

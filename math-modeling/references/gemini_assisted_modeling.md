@@ -28,7 +28,7 @@
 ### 启动流程
 ```
 1. 打开Chrome浏览器
-2. 使用Profile 2（youhao533@gmail.com）
+2. 使用专用 Gemini 登录 Profile（已登录账号）
 3. 访问 https://gemini.google.com
 4. 确认已登录账号
 5. 开始对话

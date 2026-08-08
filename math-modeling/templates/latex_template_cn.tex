@@ -1,5 +1,6 @@
 % 数学建模论文LaTeX模板 - 中文版
 % 使用XeLaTeX编译
+% 硬规则9已内置：摘要页/目录页不标页码，目录压至1页，正文页码从1开始
 
 \documentclass[12pt,a4paper]{article}
 
@@ -43,6 +44,12 @@
     urlcolor=blue
 }
 
+% ============ 目录控制（硬规则9：目录压至1页）============
+\usepackage{tocloft}
+\setcounter{tocdepth}{2}                    % 目录只显示到二级标题
+\renewcommand{\cftbeforesecskip}{2pt}       % 压缩条目间距
+\renewcommand{\cftbeforesubsecskip}{1pt}
+
 % ============ 代码高亮 ============
 \usepackage{listings}
 \usepackage{xcolor}
@@ -71,11 +78,8 @@
 
 \begin{document}
 
-% ============ 封面 ============
-\maketitle
+% ============ 摘要页（第1页，不标页码）============
 \thispagestyle{empty}
-
-% ============ 摘要 ============
 \begin{abstract}
 本文研究了[问题]。针对问题一，建立了[模型名]，采用[方法]求解，得到[结果]。针对问题二，构建了[模型名]，利用[方法]求得最优解为[数值]。灵敏度分析表明模型具有良好的鲁棒性。
 
@@ -84,8 +88,19 @@
 \end{abstract}
 
 \newpage
+
+% ============ 目录（第2页，压至1页，不标页码）============
+\thispagestyle{empty}
+\begingroup
+\renewcommand{\baselinestretch}{1.0}
+\small
 \tableofcontents
+\endgroup
 \newpage
+
+% ============ 正文（页码从1开始）============
+\setcounter{page}{1}
+\pagenumbering{arabic}
 
 % ============ 一、问题重述 ============
 \section{问题重述}

@@ -419,7 +419,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--query", "-q", required=True, help="搜索关键词")
     parser.add_argument("--limit", "-n", type=int, default=8,
                         help="最终返回结果数量（默认 8）")
-    parser.add_argument("--email", "-e", default="<your-email@example.com>",
+    parser.add_argument("--email", "-e", default="your@email.com",
                         help="OpenAlex 礼貌池邮箱")
     parser.add_argument("--anysearch-api-key",
                         help="AnySearch API Key（默认读取 ANYSEARCH_API_KEY 环境变量）")

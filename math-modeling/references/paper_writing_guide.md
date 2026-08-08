@@ -1,7 +1,7 @@
 # 数学建模论文写作指南
 
 > 本文档是数学建模竞赛论文逐模块写作规范，覆盖标准结构、每模块写作要领、排版格式、题型侧重点和高分避坑清单。
-> 配合 `detailed_paper_and_rigor_guide.md`（严谨性）和 `paper_quality_checklist.md`（质量门控）使用。
+> 配合 `../cases/detailed_paper_and_rigor_guide.md`（严谨性）和 `paper_quality_checklist.md`（质量门控）使用。
 
 ---
 
