@@ -348,94 +348,76 @@
 
 ## 7. 常见模型的Python/MATLAB实现要点
 
+---
+
+## 4. 《数学模型》经典机理与算法选型映射矩阵
+
+| 实际问题场景 | 经典数学模型原型 | 关键数学方程/理论 | 扩展与现代算法推荐 | 验证与诊断方法 |
+|-------------|----------------|------------------|-------------------|--------------|
+| **单种群/细胞生长** | Malthus, Logistic, Gompertz | $\dot{x} = rx(1-x/x_m)$, $\dot{x} = -rx\ln(x/x_m)$ | 广义生长模型、时滞微分方程 (DDE) | 拟合优度 $R^2$、饱和容量物理意义检验 |
+| **传染病与信息扩散** | SI, SIS, SIR, SEIR | $\dot{s}=-\lambda si, \dot{i}=\lambda si-\mu i$ | 网络传播动力学、随机分支过程 | 阈值定理 $\sigma = \lambda/\mu$、最终感染比例 $s_\infty$ |
+| **药代与毒理动力学** | 单室/双室房室模型 (Compartment) | $\dot{c}_1=-(k_{12}+k_{13})c_1+\frac{V_2}{V_1}k_{21}c_2$ | 药效学 (PK-PD) 联合模型、生理药代 (PBPK) | 半对数残数法、消除半衰期 $t_{1/2}$、AUC |
+| **军事对抗与博弈** | Lanchester 平方律/线性律 | $\dot{x}=-ay, \dot{y}=-bx \implies b(x_0^2-x^2)=a(y_0^2-y^2)$ | 随机兰彻斯特方程、Agent-Based 战场对抗 | 优势临界比 $y_0/x_0 = \sqrt{b/a}$ 检验 |
+| **生态捕食与两物种竞争** | Volterra 捕食者-猎物模型、竞争模型 | $\dot{x}=x(r_1-ay), \dot{y}=y(-r_2+bx)$ | Holling II/III 型功能反应函数、扩散相平面 | 平衡点 Jacobian 矩阵特征值 ($p, q$) 稳定性判据、相轨线闭合性 |
+| **军备竞赛与动态平衡** | Richardson 军备竞赛模型 | $\dot{x}=ky-\alpha x+g, \dot{y}=lx-\beta y+h$ | 动态博弈、微分博弈 | 稳定条件 $\alpha\beta > kl$ 校验 |
+| **市场价格与供求振荡** | 蛛网模型 (Cobweb Model) | $P(k) = -\frac{d}{b}P(k-1) + \frac{a+c}{b}$ | 期望形成机制、非线性差分方程 | 阻尼收敛条件 $d/b < 1$ 检验 |
+| **种群离散世代演化** | Logistic 差分方程 | $x_{k+1} = \mu x_k (1 - x_k)$ | 分岔图 (Bifurcation)、Lyapunov 指数 | 周期倍化分岔点 $\mu = 3, 3.449, \dots$ 及混沌阈值 |
+| **年龄结构人口预测** | Leslie 矩阵模型 | $\boldsymbol{x}(k+1) = L \boldsymbol{x}(k)$ | 连续偏微分方程人口迁移模型、Leslie广义矩阵 | Perron-Frobenius 谱半径 $\lambda_1$ 与稳态年龄结构向量 |
+| **状态转移与吸收分析** | 离散时间马尔可夫链 (DTMC) | $\boldsymbol{w}P=\boldsymbol{w}, M=(I-Q)^{-1}, F=MR$ | 连续马氏链 (CTMC)、隐马尔可夫 (HMM) | 稳态平衡解存在性、吸收态可达性与平均吸收步数 |
+| **生产、排产与投资优化** | 线性规划 (LP) / 整数规划 (MILP) | $\min \boldsymbol{c}^T \boldsymbol{x}, \text{s.t. } A\boldsymbol{x} \le \boldsymbol{b}, \boldsymbol{x} \in \mathbb{Z}$ | 割平面法、分支定界法、列生成法 (Column Generation) | 约束满足率、对偶/影子价格 (Dual Price) 经济解释、容许变动范围 |
+| **复杂逻辑与离散配置** | 0-1 变量逻辑命题转化 (大 M 法) | 互斥条件、固定费用、分段线性凸组合 | 混合整数非线性规划 (MINLP) | 解的可行性、松弛界限 (Relaxation Gap) |
+| **存贮策略与供应链** | 经典 EOQ、允许缺货模型、报童模型 | $T^*=\sqrt{\frac{2c_1}{c_2 r}}, P(r \le n^*)=\frac{b-a}{b-c}$ | $(s, S)$ 连续/定期盘点策略、多级供应链协调 | 灵敏度弹性分析 $S = \frac{x}{y}\frac{dy}{dx}$、稳健性检验 |
+| **多准则决策与赋权** | AHP (特征值法/和积法/根法)、TOPSIS | $A\boldsymbol{w}=\lambda_{\max}\boldsymbol{w}, CR=\frac{CI}{RI}<0.1$ | 组合赋权 (AHP+熵权/CRITIC)、PROMETHEE | 矩阵一致性检验、正向/逆向指标独立性与排序鲁棒性 |
+| **公平合作与成本分摊** | 合作博弈 Shapley 值、Raiffa 谈判解 | $\varphi_i(v)=\sum \frac{|s|!(n-|s|-1)!}{n!}[v(s\cup\{i\})-v(s)]$ | 核仁 (Nucleolus)、核心 (Core)、非对称议价 | 有效性公理 $\sum \varphi_i = v(I)$、单调性与无搭便车性 |
+| **有向图实力综合排名** | 循环比赛图排名模型 | $\boldsymbol{s}^* = \lim_{k\to\infty} \frac{A^k \boldsymbol{e}}{\lambda_1^k}$ | PageRank 算法、网络中心性度量 | 强连通分量分析、主特征向量归一化 |
+| **计量经济与回归分析** | 多元线性/逐步回归/虚拟变量 | $y = \boldsymbol{X}\boldsymbol{\beta} + \boldsymbol{\varepsilon}$ | 广义差分模型 (Cochrane-Orcutt)、Ridge/Lasso | 显著性检验 ($R^2, F, t$)、残差图、Durbin-Watson 自相关检验 |
+| **连续过程极值与赛跑** | 变分法 (Euler-Lagrange)、Keller 控制 | $F_y - \frac{d}{dt}F_{\dot{y}}=0, H=F+\lambda f$ | 极大值原理 (Pontryagin)、动态规划 HJB 方程 | 能量守恒检验、横截条件 (Transversality Condition) |
+| **连续时空流体与交通流** | 交通流偏微分方程与激波 (Shock Wave) | $\frac{\partial \rho}{\partial t} + c(\rho)\frac{\partial \rho}{\partial x} = 0, \frac{dx_s}{dt}=\frac{\Delta q}{\Delta \rho}$ | 二阶交通流模型 (LWR/Payne)、元胞自动机 (NaSch) | 激波产生时间 $t_s$、排队消散波形分析 |
+
+---
+
+## 5. 常见模型算法库快速调用清单
+
 ### Python 快速实现
 
 ```python
-# 灰色GM(1,1)
-# pip install grey
-from grey import GM1
-gm = GM1(data)  # data为原始数据序列
-result = gm.predict(n)  # 预测n个值
+# 1. 经典数学建模工具箱 (已内置于 scripts/math_modeling_utils.py)
+from math_modeling_utils import (
+    OptimizationTool, StatisticsTool, EvaluationTool, DynamicSystemTool, MarkovTool, VisualizationTool
+)
 
-# TOPSIS
-# pip install topsis
-import numpy as np
-from topsis import topsis
+# 2. 层次分析法 (AHP)
+matrix = [[1, 2, 6], [1/2, 1, 4], [1/6, 1/4, 1]]
+weights, cr, is_pass = EvaluationTool.ahp(matrix, method='eigen')
 
-# 熵权法
-# pip install entropy-weight
-from entropy_weight import entropy_weight
+# 3. 合作博弈 Shapley 值
+def char_func(subset):
+    values = {(1,): 1, (2,): 1, (3,): 1, (1, 2): 7, (1, 3): 5, (2, 3): 4, (1, 2, 3): 10}
+    return values.get(subset, 0)
+shapley = EvaluationTool.shapley_value(3, char_func)
 
-# 遗传算法
-# pip install pymoo
-from pymoo.algorithms.moo.nsga2 import NSGA2
-from pymoo.optimize import minimize
+# 4. 吸收马尔可夫链分析
+# P = [[I, 0], [R, Q]]
+res_markov = MarkovTool.absorbing_markov_chain(P, n_absorbing=2)
+fundamental_M = res_markov['Fundamental_Matrix_M']
+mean_time_y = res_markov['Mean_Absorption_Time_y']
+absorb_prob_F = res_markov['Absorption_Prob_F']
 
-# ARIMA
-# pip install statsmodels
-from statsmodels.tsa.arima.model import ARIMA
-model = ARIMA(data, order=(p,d,q))
-fitted = model.fit()
+# 5. 自治系统平衡点稳定性分析 (相平面 Jacobian 特征值判据)
+f_func = lambda x, y: x * (1 - 0.5 * x - 0.5 * y)
+g_func = lambda y, x: y * (1 - 0.3 * x - 0.7 * y)
+stab = DynamicSystemTool.phase_plane_stability(f_func, g_func, x0=1.0, y0=1.0)
 
-# XGBoost
-# pip install xgboost
-import xgboost as xgb
-model = xgb.XGBClassifier()
-model.fit(X_train, y_train)
-```
-
-### MATLAB 快速实现
-
-```matlab
-% 灰色GM(1,1)
-% 内置工具箱支持
-
-% TOPSIS
-% 通过自定义函数实现
-
-% 遗传算法
-% 使用 Global Optimization Toolbox
-options = optimoptions('ga', 'MaxGenerations', 100);
-[x, fval] = ga(@fitness, nvars, A, b, Aeq, beq, lb, ub, options);
-
-% ARIMA
-% 使用 Econometrics Toolbox
-model = arima('ARLags', 1, 'D', 1, 'MALags', 1);
-est_model = estimate(model, data);
+# 6. Durbin-Watson 自相关检验
+dw_res = StatisticsTool.durbin_watson_test(residuals)
 ```
 
 ---
 
-## 8. 竞赛时间分配建议
+## 6. 注意事项与经典建模高频陷阱
 
-| 阶段 | 时间占比 | 任务 |
-|------|---------|------|
-| 问题分析 | 10% | 理解题意，确定问题类型 |
-| 数据处理 | 20% | 数据清洗、探索性分析 |
-| Baseline 建模 | 15% | 快速建立简单模型 |
-| 主模型构建 | 30% | 核心模型开发与调优 |
-| 对比与验证 | 15% | 模型对比、灵敏度分析 |
-| 论文撰写 | 10% | 结果整理与论文写作 |
-
----
-
-## 9. 注意事项与陷阱
-
-### 常见错误
-1. **数据泄露**：使用了测试集信息训练模型
-2. **过拟合**：模型在训练集上表现完美，测试集上表现差
-3. **忽略baseline**：直接用复杂模型，无法证明其有效性
-4. **只看精度**：忽略可解释性、计算效率等维度
-5. **创新点不明确**：堆砌模型但没有实质性改进
-
-### 提分技巧
-1. **图表美观**：使用 matplotlib/seaborn 绘制专业图表
-2. **公式规范**：使用 LaTeX 排版数学公式
-3. **对比充分**：至少3个模型对比，从多维度评价
-4. **灵敏度必做**：几乎所有题目都需要灵敏度分析
-5. **结合实际**：模型结果要与实际背景结合解释
-
----
-
-*最后更新：2024年*
-*适用场景：全国大学生数学建模竞赛、美赛(MCM/ICM)、研究生数学建模竞赛*
+1. **先做无量纲化与特征尺度分析**：在微分方程与物理机理题中，未做无量纲化直接带入大数值求解容易导致数值奇异。
+2. **区分“拟合”与“机理动力学”**：可以用曲线拟合作为 baseline，但主模型应基于守恒律（质量/能量/动量/状态流转）建立微分/差分方程。
+3. **优化模型必做对偶与灵敏度分析**：不仅仅汇报目标函数最优值，必须计算影子价格 (Dual Price) 与参数弹性 $S = \frac{x}{y}\frac{dy}{dx}$。
+4. **统计回归必须做残差与自相关诊断**：检查残差分布及 DW 统计量，出现强自相关时需进行广义差分修正。
+5. **合作博弈与赋权评价强调公理化与鲁棒性**：说明指标选择无重复计权，AHP必须通过一致性检验，Shapley分摊需验证有效性公理。

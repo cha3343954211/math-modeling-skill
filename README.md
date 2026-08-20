@@ -1,276 +1,140 @@
-# Math Modeling Skill for Hermes Agent
+# Math Modeling Skill (数学建模人机协同全真攻坚系统)
 
-一个**特别基于 Hermes Agent 智能体使用**的数学建模竞赛 Skill 包，面向 CUMCM / MCM / ICM / MathorCup / 校赛 / 课程建模项目，覆盖从审题、资料检索、模型选择、代码求解、图表生成、结果冻结、论文写作到最终审计打包的完整流程。
+一个专为 **数学建模竞赛（CUMCM 国赛 / MCM/ICM 美赛 / MathorCup / APMCM / 研赛 / 校赛）与学术建模** 打造的顶级 Agent Skill 包。
 
-本仓库适合两类使用者：
+深度融合姜启源《数学模型》经典机理体系与历年国一/O奖获奖团队攻坚方法论，支持 **72h/96h 全生命周期攻坚** 与 **极简单步独立按需调用**。
 
-1. **Hermes Agent 用户**：把本 skill 安装到 Hermes 的 skills 目录，让智能体在数学建模任务中自动遵循本流程。
-2. **数学建模参赛者/学习者**：直接阅读 `SKILL.md`、`references/`、`templates/` 和 `scripts/`，作为建模流程、论文写作和支撑材料组织指南。
+---
 
-> 公开版说明：本导出包已清理个人路径、私人邮箱、私有知识库 ID、自动使用外部私有 AI 服务的规则以及本机缓存文件。
+## 🌟 核心升级与特性亮点
 
-## 1. 项目特点
+- 🏆 **72h/96h 真实竞赛全真生命周期**：严格还原赛场节奏（选题 $\to$ 检索 $\to$ 审计 $\to$ 求解 $\to$ 验证 $\to$ 论文 $\to$ 封箱）。
+- ⚡ **模块化极简单步独立调用**：全流程解耦为 6 个独立规范文件（`stages/`），支持通过 `/topic`, `/search`, `/audit`, `/solve`, `/validate`, `/paper`, `/pack` 随时单步触发。
+- 🤝 **人机协同分阶段审批门控 (CP0~CP5)**：拒绝 AI 黑盒盲跑，关键节点自动弹出【人机协同审批卡】，支持队长/人类选手确认、修改假设（`/revise`）、选定路线（`/select`）与微调参数（`/tune`）。
+- 📖 **融入姜启源《数学模型》全书机理库**：内置 13 大专题数学模型公式推导手册与离散运筹技巧，配套 `math_modeling_utils.py` (v3.0) 工具库（AHP多算法、Shapley值、Leslie矩阵、相平面判据、吸收马氏链、EOQ与报童模型、DW检验与敏感度弹性）。
+- 🔍 **全自动问题初步分析与专属参考文献库**：
+  - 自动拆解子问题要素并绘制 **Mermaid 设问递进图**（`docs/problem_spec.md`）；
+  - 自动检索权威高被引文献，批量下载 Open Access PDF 全文至 `docs/references/papers/`；
+  - 自动生成 LaTeX `references.bib` 与包含方法对比矩阵、真实参数定界的《文献综述与数模启发报告》（`docs/literature_review.md`）。
+- 📝 **专家评审偏好与获奖级排版铁律**：严格执行正文 18~25 页、第1页三段式灵魂摘要（占分 40%+）、第2页目录、正文从 1 标页码、标准三线表（booktabs）及每图每表 2~4 句学术机理解读。
+- 🔒 **干净环境一键复跑与匿名合规封箱**：封箱前执行独立干净环境一键全量复跑验证，严防代码运行报错或数字与论文不一致，全工程扫描清除个人与学校信息。
 
-- **Hermes Agent 原生 Skill 格式**：以 `SKILL.md` 为主入口，配合 `references/`、`templates/`、`scripts/` 使用。
-- **全流程门控**：采用 S0 + G1-G7 工作流，要求每个关键阶段都有落盘证据。
-- **获奖级论文导向**：强调摘要数字、小问闭环、baseline、验证、稳健性、Claim-Evidence 映射。
-- **代码与论文一致性**：所有关键数字必须来自冻结结果文件，避免论文数字和代码输出不一致。
-- **支撑材料标准化**：统一 `支撑材料/` 目录结构，便于复现、提交和审计。
-- **可选学术检索工具**：提供 OpenAlex / AnySearch 检索脚本模板，用于查找可核验文献。
-- **公开发布友好**：不包含个人凭据、个人账号、私有知识库 ID 或自动调用私人 AI 服务的规则。
+---
 
-## 2. 目录结构
-
-> 测试结果仓库：完整数学建模国赛应用测试结果已单独放在 [`math-m-skill-test`](https://github.com/cha3343954211/math-m-skill-test) 仓库中。本仓库仅保留 skill 主包、模板、脚本和说明文档。
+## 📂 模块化目录结构
 
 ```text
 math-modeling-skill/
-├── README.md
-├── LICENSE
-├── .gitignore
+├── README.md                              # 本说明文档
 ├── math-modeling/
-│   ├── SKILL.md                 # Hermes Skill 主文件
-│   ├── references/              # 工作流、质量门控、案例笔记、踩坑记录
-│   ├── templates/               # LaTeX、支撑材料 README、论文检索配置模板
-│   └── scripts/                 # 学术检索与数学建模工具脚本
-└── math-modeling-skill-public.zip
+│   ├── SKILL.md                          # 顶层调度与全局规则入口
+│   ├── stages/                           # 6 大独立可编辑/可升级阶段规范
+│   │   ├── 00_topic.md                   # Step 0: 破题、量化选题与立项决策 (0~6h)
+│   │   ├── 00_search.md                  # 🔍: 学术文献检索、下载与综述生成
+│   │   ├── 01_audit.md                   # Step 1: 自动化问题分析、数据审计与符号系统 (6~18h)
+│   │   ├── 02_solve.md                   # Step 2: 多问递进建模与代码高效求解 (18~48h)
+│   │   ├── 03_validate.md                # Step 3: 对照验证、参数敏感度弹性与数字冻结 (48~60h)
+│   │   ├── 04_paper.md                   # Step 4: 灵魂摘要精雕、图表美化与 LaTeX 排版 (60~70h)
+│   │   └── 05_pack.md                    # Step 5: 独立复现质检、匿名合规与材料打包 (70~72h)
+│   ├── references/                       # 核心数学机理、竞赛策略与排版指南
+│   │   ├── real_competition_workflow_72h.md # 72h/96h 竞赛全真攻坚指南与三角色协同协议
+│   │   ├── human_in_the_loop_protocol.md    # 人机协同审批点规范 (CP0~CP5) 与指令集
+│   │   ├── classic_math_models_handbook.md  # 《数学模型》全书 13 大专题机理推导手册
+│   │   ├── programming_and_discrete_tricks.md # 运筹规划与离散建模技巧 (大M法/对偶价格/AHP)
+│   │   ├── model_selection_guide.md         # 题型决策树与经典机理映射矩阵
+│   │   └── supporting_materials_layout_v5_0.md # 支撑材料目录规范
+│   ├── scripts/                          # 高性能工具箱
+│   │   ├── auto_problem_audit.py         # 自动化问题初步分析与文献归档
+│   │   ├── openalex_scholar.py           # OpenAlex 学术文献检索、PDF下载与综述合成
+│   │   ├── hybrid_scholar.py             # 双源并发检索与交叉验证
+│   │   └── math_modeling_utils.py        # 数学建模核心算法工具库 (v3.0)
+│   └── templates/                        # 竞赛 LaTeX 论文模板 (中文/英文) 与配置
 ```
 
-## 3. 安装到 Hermes Agent
+---
 
-### 3.1 用户本地安装（推荐）
+## ⚡ 极简使用说明（随时单步独立调用）
 
-把 `math-modeling/` 复制到 Hermes 用户 skills 目录：
+本 Skill 既支持 **72h/96h 全流程自主攻坚**，也支持**单步按需精准调用**。在对话中输入对应快捷指令即可立即执行该阶段：
 
-```bash
-# Windows Git Bash / Linux / macOS 类 Unix shell
-mkdir -p "$HOME/.hermes/skills/research"
-cp -r math-modeling "$HOME/.hermes/skills/research/math-modeling"
-```
+| 快捷指令 | 阶段名 | 独立规范 | 核心输入 | 单步核心交付成果 |
+| :--- | :--- | :--- | :--- | :--- |
+| **`/topic`** | **1. 选题** | [`00_topic.md`](file:///f:/CodeworksF/skills/math-modeling/stages/00_topic.md) | 题目集 (A/B/C/D/E/F) | 4 维度量化评分矩阵、`topic_decision.md`、`competition_brief.md` |
+| **`/search`** | **🔍 检索** | [`00_search.md`](file:///f:/CodeworksF/skills/math-modeling/stages/00_search.md) | 关键词 / 赛题方向 | 权威文献列表、真实物理参数范围、BibTeX 引用 |
+| **`/audit`** | **2. 审计** | [`01_audit.md`](file:///f:/CodeworksF/skills/math-modeling/stages/01_audit.md) | 赛题文本与附件数据 | 问题规格书 `problem_spec.md`（含递进图）、`docs/references/` 专属文献库、符号表 `symbols.md`、`assumptions.md` |
+| **`/solve`** | **3. 求解** | [`02_solve.md`](file:///f:/CodeworksF/skills/math-modeling/stages/02_solve.md) | 算法方案、清洗数据 | 完整公式推导、Python 求解代码、中间解表格与高分辨率图表 |
+| **`/validate`** | **4. 验证** | [`03_validate.md`](file:///f:/CodeworksF/skills/math-modeling/stages/03_validate.md) | 求解代码与结果 | 改装效果对照表、参数弹性 $S = \frac{x}{y}\frac{dy}{dx}$、DW自相关检验、`frozen_numbers.json` |
+| **`/paper`** | **5. 论文** | [`04_paper.md`](file:///f:/CodeworksF/skills/math-modeling/stages/04_paper.md) | 冻结数字、图表、结论 | 1 页三段式灵魂摘要、1 页目录、18~25 页正文的完整 LaTeX 源码与 PDF |
+| **`/pack`** | **6. 封箱** | [`05_pack.md`](file:///f:/CodeworksF/skills/math-modeling/stages/05_pack.md) | 论文 PDF、全量代码 | 干净环境一键复跑报告、匿名合规扫描、规范支撑材料包与 MD5 码 |
 
-然后重启 Hermes Agent 会话。之后当用户提出数学建模相关任务时，Hermes 会根据 skill 触发条件自动加载；也可以在提示词中明确要求：
+---
+
+## 🤝 人机协同 5 大审批门控交互示例 (Checkpoints)
+
+在每个阶段完成时，AI 会主动弹出结构化审批卡，人类选手可直接发送控制指令推进或修正：
 
 ```text
-请加载 math-modeling skill，完整求解这个数学建模题。
+AI 输出示例：
+--------------------------------------------------------------------------------
+### 📋 [Checkpoint 1: 数据审计、符号系统与假设清单] 人机协同审批卡
+1. 产出汇报：已生成 docs/problem_spec.md，已在 docs/references/ 归档 5 篇权威文献并生成综述
+2. 递进主线：Q1(静态MILP) -> Q2(时变鲁棒优化) -> Q3(多目标TOPSIS)
+3. 待决策：是否同意当前数据清洗规则与假设清单？
+--------------------------------------------------------------------------------
+
+人类选手回复指令：
+- 回复 "/approve"                 --> 确认通过，直接进入 Stage 2 开始核心建模与代码求解
+- 回复 "/revise assumption [内容]" --> 修改或放宽特定假设
+- 回复 "/tune lambda=0.25"         --> 微调特定物理或算法超参数
+- 回复 "/refine abstract [要点]"   --> 指定摘要精修侧重点
 ```
 
-### 3.2 放入 Hermes Agent 源码仓库
+---
 
-如果你维护 Hermes Agent 源码树，可放到：
+## 🛠️ 工具库与命令行使用指南
 
-```text
-skills/research/math-modeling/SKILL.md
-skills/research/math-modeling/references/
-skills/research/math-modeling/templates/
-skills/research/math-modeling/scripts/
+### 1. 自动化问题初步分析与文献归档
+```powershell
+python math-modeling/scripts/auto_problem_audit.py
+```
+> 全自动解析赛题要素、绘制设问递进图、检索 OpenAlex 学术数据库、下载开放获取 PDF 至 `docs/references/papers/`、自动生成 `docs/references/references.bib` 与 `docs/literature_review.md`。
+
+### 2. 学术文献检索与综述生成
+```powershell
+# 搜索并生成文献综述与数模启发报告
+python math-modeling/scripts/openalex_scholar.py --query "traffic flow shock wave modeling" --sort cited_by_count:desc --limit 5 --review docs/literature_review.md
+
+# 自动下载所有 Open Access 论文 PDF
+python math-modeling/scripts/openalex_scholar.py --query "battery thermal management" --field physics --year-start 2020 --download-dir data/papers/
 ```
 
-### 3.3 验证安装
+### 3. 数学建模核心算法工具箱 (`math_modeling_utils.py`)
+```python
+from math_modeling_utils import AHPTool, GameTheoryTool, DynamicSystemTool, StatisticsTool
 
-重启会话后向 Hermes 发送：
+# 1. 层次分析法 (AHP) 特征值法与一致性检验
+weights, cr, is_pass = AHPTool.eigenvalue_method(comparison_matrix)
 
-```text
-列出可用 skills，确认 math-modeling 是否可用。
+# 2. 合作博弈 Shapley 利益分配值计算
+shapley_values = GameTheoryTool.shapley_value(num_players=3, v_func=v_func)
+
+# 3. 参数敏感度弹性分析 S = (x/y) * (dy/dx)
+elasticity = StatisticsTool.parameter_elasticity(x_base=10.0, y_base=50.0, x_perturbed=11.0, y_perturbed=53.0)
 ```
 
-或者直接发起一个小任务：
+---
 
-```text
-请使用 math-modeling skill，给我一个评价类数学建模题的建模流程。
-```
+## 🏆 获奖级论文排版铁律清单
 
-## 4. Hermes 智能体推荐使用方式
+1. **第 1 页为摘要页（严格限制 1 页）**：必须包含【背景定位 + 分问具体方法与精确冻结数字 + 稳健性结论】三段式结构，拒绝空话。
+2. **第 2 页为目录页（严格限制 1 页）**：通过 `tocdepth=2` 显示至二级标题，通过字体行距微调强制压缩为 1 页。
+3. **正文页码从 1 起标**：摘要与目录不标页码或标罗马数字，正文第 1 节起标阿拉伯数字 1。
+4. **正文篇幅严格 18~25 页**：不足 18 页需扩充推导、验证与图表解读；超过 25 页必须精简。
+5. **图表“三一法则”**：全篇使用标准三线表（booktabs），每图每表必须有编号与量纲，且正文中紧跟 **2~4 句深入的数学与现实机理解读**。
 
-本 skill 不是普通资料包，而是为 Hermes Agent 的“工具调用 + 文件落盘 + 代码执行 + 论文生成”工作方式设计。建议用户给 Hermes 的任务尽量包含以下信息：
+---
 
-```text
-请使用 math-modeling skill 完成数学建模任务。
-题目目录：<你的题目目录>
-目标：完整求解 / 只做审题 / 只写论文 / 检查已有论文 / 生成支撑材料
-要求：所有代码、图表、结果、论文都保存到题目目录下的 支撑材料/ 中。
-```
+## 💻 运行环境依赖
 
-### 示例 1：完整求解题目
-
-```text
-请使用 math-modeling skill 完整求解 E:/contest/problemC 这个数学建模题。
-要求：
-1. 原地创建 支撑材料/ 目录；
-2. 先做题面和附件预检；
-3. 按问题一、问题二、问题三顺序求解，不要割裂并发；
-4. 代码、图表、输出和论文都保存到支撑材料；
-5. 最终给出论文 PDF、LaTeX、冻结数字、运行说明和压缩包。
-```
-
-### 示例 2：只做审题与模型路线
-
-```text
-请使用 math-modeling skill 阅读这个题目，先不要写正式代码。
-请输出：
-1. 子问题拆解；
-2. 题型分类；
-3. 输入输出和约束；
-4. baseline；
-5. 候选主模型；
-6. 风险点和验证方案。
-```
-
-### 示例 3：检查已有论文和支撑材料
-
-```text
-请使用 math-modeling skill 审计这个数学建模项目。
-重点检查：
-1. 摘要是否有每问关键数字；
-2. 论文数字是否来自 frozen_numbers.json；
-3. 图表是否有来源和正文解释；
-4. 代码是否能复现；
-5. 支撑材料 zip 是否完整。
-```
-
-## 5. 核心工作流
-
-推荐遵循以下门控流程：
-
-1. **S0 输入资产预检**
-   - 检查题面、附件、结果模板是否可读。
-   - 建立标准 `支撑材料/` 目录。
-   - 记录 `qa/preflight_report.md`。
-
-2. **G1 题目解析与题型分类**
-   - 拆解每个子问题。
-   - 判断预测、评价、优化、机理、图论、仿真等题型。
-   - 形成 `contracts/problem_analysis.json`、`contracts/rubric_alignment.md`。
-
-3. **G2 方法验证与 PoC**
-   - 每个建模问题至少设置 baseline。
-   - 候选模型先用真实数据小切片跑 ≤30 行 PoC。
-   - 记录可行性数字和淘汰理由。
-
-4. **G3 正式代码与结果生成**
-   - 代码写入 `questN/codes/`。
-   - 图表写入 `questN/figures/`。
-   - 表格写入 `questN/tables/`。
-   - 输出写入 `questN/outputs/`。
-
-5. **G4 结果冻结与证据包**
-   - 生成 `results/frozen_numbers.json`。
-   - 每问生成 `qN_solution_package_for_writer.md`。
-   - 关键图表建立 Figure Contract。
-
-6. **G5 论文写作**
-   - 论文只引用冻结数字、结果表、证据文件和可核验文献。
-   - 每问按“题目要求 → 输入数据 → baseline → 主模型 → 求解 → 结果 → 验证 → 小结”闭环写作。
-
-7. **G6/G7 审计与打包**
-   - Evidence Gate：数字、图表、表格、结论都有证据。
-   - Format Gate：页数、目录、标题、图表、引用、附录格式达标。
-   - 最终打包 `package/支撑材料.zip` 并核验内容。
-
-## 6. 支撑材料推荐结构
-
-```text
-支撑材料/
-├── README.md
-├── run.yaml
-├── progress.jsonl
-├── data/
-│   ├── raw/
-│   ├── processed/
-│   └── data_audit.md
-├── references/
-├── contracts/
-├── quest1/
-│   ├── codes/
-│   ├── figures/
-│   ├── outputs/
-│   └── tables/
-├── quest2/
-│   ├── codes/
-│   ├── figures/
-│   ├── outputs/
-│   └── tables/
-├── quest3/
-│   ├── codes/
-│   ├── figures/
-│   ├── outputs/
-│   └── tables/
-├── results/
-├── figures/
-├── tables/
-├── qa/
-├── papper/
-│   └── assets/
-├── package/
-└── scratch/
-```
-
-## 7. 可选配置
-
-### 7.1 Python 依赖
-
-基础依赖：
-
-```bash
-pip install numpy pandas scipy scikit-learn matplotlib seaborn statsmodels pulp networkx requests pyyaml
-```
-
-按需安装：
-
-```bash
-pip install xgboost lightgbm ortools openpyxl python-docx
-```
-
-### 7.2 LaTeX 依赖
-
-中文论文建议使用 XeLaTeX：
-
-```bash
-xelatex -interaction=nonstopmode 论文.tex
-xelatex -interaction=nonstopmode 论文.tex
-xelatex -interaction=nonstopmode 论文.tex
-```
-
-Windows 可安装 MiKTeX 或 TeX Live；Linux 可安装 `texlive-xetex` 与中文字体包。
-
-### 7.3 学术检索
-
-`scripts/hybrid_scholar.py` 支持 OpenAlex + AnySearch 检索。请使用你自己的联系邮箱：
-
-```bash
-python scripts/hybrid_scholar.py \
-  --query "TOPSIS entropy weight evaluation mathematical modeling" \
-  --email "your-email@example.com" \
-  --limit 8 \
-  --field mathematics \
-  --json
-```
-
-AnySearch Key 不要写入仓库，可通过环境变量传入：
-
-```bash
-export ANYSEARCH_API_KEY="your_api_key"
-```
-
-### 7.4 个人知识库
-
-本公开包不包含任何私有知识库 ID。若你有 IMA、Obsidian、Zotero 或其他个人资料库，可以把相关检索步骤作为可选 Phase 0；账号、token、knowledge base id 应放在本机环境变量或私有配置中。
-
-## 8. 参考与融合的开源仓库
-
-本 skill 的流程设计和部分规则参考、融合或受到以下公开项目启发。发布到 GitHub 时建议保留本节作为 attribution：
-
-- `Lupynow/math-modeling-skills`：solver / paper 双流程、问题本质分类、文献证据、模型决策矩阵等思想。
-- `zhnnky329/MathModeling-skills`：G1-G6 门控、PoC、review 落盘、冻结数字、三层审计等思想。
-- `XiaoMaColtAI/math-modeling-skill`：建模手 / 编程手 / 论文手角色合同、Figure Contract、Claim-Evidence 映射等思想。
-- `yushui2022/MathModel-Skill`：Preflight、附件分类、workflow contracts、Evidence Gate、Format Gate 等思想。
-- `deafenken/auto-MM`：长流程竞赛状态管理、完整性门禁、匿名与提交包护栏等思想。
-- `latexstudio/CUMCMThesis`：CUMCM LaTeX 模板与论文排版规范参考。
-- `google/or-tools`、`Pyomo/pyomo`、`scipy/scipy`：运筹优化建模与求解工具参考。
-- `Valdecy/pyDecision`、`anyoptimization/pymoo`：评价决策、多目标优化方法参考。
-- `statsmodels/statsmodels`、`scikit-learn/scikit-learn`：统计建模、机器学习 baseline 与验证工具参考。
-
-说明：本仓库是 Hermes Agent Skill 包和数学建模流程整理，不是上述仓库的直接镜像。若你复制了第三方仓库代码或模板，请按对应许可证补充 NOTICE 和 license 文件。
-
-## 9. License
-
-建议使用 MIT License；如果你引用或改写了第三方仓库内容，请按其许可证补充 NOTICE / attribution。
+- **Python 3.9+**：`numpy`, `pandas`, `scipy`, `scikit-learn`, `matplotlib`, `seaborn`, `statsmodels`, `pulp`, `networkx`
+- **LaTeX 环境**：TeX Live / MiKTeX（支持 `xelatex` 编译中文论文）
