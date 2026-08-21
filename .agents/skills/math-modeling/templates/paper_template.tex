@@ -1,0 +1,146 @@
+% 数学建模竞赛论文LaTeX模板
+% 适用于CUMCM（国赛）和MCM/ICM（美赛）
+
+\documentclass[12pt,a4paper]{article}
+
+% ============ 宏包导入 ============
+\usepackage[UTF8]{ctex}                % 中文支持
+\usepackage{amsmath,amssymb,amsfonts}  % 数学公式
+\usepackage{graphicx}                  % 图片插入
+\usepackage{float}                     % 浮动体控制
+\usepackage{booktabs}                  % 三线表
+\usepackage{geometry}                  % 页面设置
+\usepackage{fancyhdr}                  % 页眉页脚
+\usepackage{hyperref}                  % 超链接
+\usepackage{listings}                  % 代码高亮
+\usepackage{natbib}                    % 参考文献
+
+% ============ 页面设置 ============
+\geometry{top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm}
+
+% ============ 页眉页脚 ============
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[C]{\small 数学建模竞赛论文}
+\fancyfoot[C]{\thepage}
+
+% ============ 代码高亮 ============
+\lstset{
+    basicstyle=\small\ttfamily,
+    keywordstyle=\color{blue},
+    commentstyle=\color{green!60!black},
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    frame=single,
+    breaklines=true,
+}
+
+\begin{document}
+
+\title{\textbf{论文标题}}
+\author{队员1 \quad 队员2 \quad 队员3 \\ \small 学校名称}
+\date{\today}
+\maketitle
+
+% ============ 摘要 ============
+\begin{abstract}
+本文研究了\textbf{[问题名称]}问题。
+
+\textbf{针对问题一}，建立了\textbf{[模型名]}，采用\textbf{[方法]}求解，得到\textbf{[结果]}。
+
+\textbf{针对问题二}，构建了\textbf{[模型名]}，得到\textbf{[结果]}。
+
+最后进行了灵敏度分析，结果表明\textbf{[评价]}。
+
+\bigskip
+\noindent\textbf{关键词：} 关键词1；关键词2；关键词3
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+% ============ 一、问题重述 ============
+\section{问题重述}
+\subsection{问题背景}
+[用自己的语言描述]
+
+\subsection{问题要求}
+\begin{enumerate}
+    \item 问题一：[要求]
+    \item 问题二：[要求]
+\end{enumerate}
+
+% ============ 二、问题分析 ============
+\section{问题分析}
+\subsection{问题一分析}
+[分析问题本质，确定建模方向]
+
+% ============ 三、模型假设 ============
+\section{模型假设}
+\begin{enumerate}
+    \item 假设1：[内容]（合理性：[说明]）
+    \item 假设2：[内容]
+\end{enumerate}
+
+% ============ 四、符号说明 ============
+\section{符号说明}
+\begin{table}[H]
+\centering
+\begin{tabular}{cll}
+\toprule
+\textbf{符号} & \textbf{含义} & \textbf{单位} \\
+\midrule
+$x$ & 变量 & 无 \\
+$Z$ & 目标函数值 & 元 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ============ 五、模型建立与求解 ============
+\section{模型建立与求解}
+\subsection{问题一模型}
+\subsubsection{模型建立}
+\begin{equation}
+\min Z = \sum_{i=1}^{n} c_i x_i
+\end{equation}
+
+\subsubsection{模型求解}
+[求解步骤]
+
+\subsubsection{结果分析}
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.8\textwidth]{figures/result.png}
+\caption{结果可视化}
+\end{figure}
+
+% ============ 六、灵敏度分析 ============
+\section{灵敏度分析}
+[必须做！这是评奖的重要依据]
+
+% ============ 七、模型评价 ============
+\section{模型评价与推广}
+\subsection{模型优点}
+\subsection{模型缺点}
+\subsection{改进方向}
+
+% ============ 参考文献 ============
+\begin{thebibliography}{99}
+\bibitem{ref1} 作者. 标题[J]. 期刊, 年份.
+\end{thebibliography}
+
+% ============ 附录 ============
+\appendix
+\section{附录：代码}
+\begin{lstlisting}[language=Python, caption={求解代码}]
+import numpy as np
+from scipy.optimize import linprog
+
+c = [2, 3]
+A = [[1, 1], [2, 1]]
+b = [4, 5]
+result = linprog(c, A_ub=A, b_ub=b)
+print(f"最优解: {result.x}")
+\end{lstlisting}
+
+\end{document}
