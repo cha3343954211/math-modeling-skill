@@ -42,8 +42,10 @@ math-modeling-skill/
 │   │   ├── classic_math_models_handbook.md  # 《数学模型》全书 13 大专题机理推导手册
 │   │   ├── programming_and_discrete_tricks.md # 运筹规划与离散建模技巧 (大M法/对偶价格/AHP)
 │   │   ├── model_selection_guide.md         # 题型决策树与经典机理映射矩阵
-│   │   └── supporting_materials_layout_v5_0.md # 支撑材料目录规范
+│   │   ├── cumcm_c_problem_expert_handbook.md # 国赛C题专家评审精要与真题解法 (2020~2025)
+│   │   ├── supporting_materials_layout_v5_0.md # 支撑材料目录规范
 │   ├── scripts/                          # 高性能工具箱
+│   │   ├── quickstart.py                 # 交互式快速启动向导 (CLI)
 │   │   ├── auto_problem_audit.py         # 自动化问题初步分析与文献归档
 │   │   ├── openalex_scholar.py           # OpenAlex 学术文献检索、PDF下载与综述合成
 │   │   ├── hybrid_scholar.py             # 双源并发检索与交叉验证
@@ -53,9 +55,31 @@ math-modeling-skill/
 
 ---
 
-## ⚡ 极简使用说明（随时单步独立调用）
+## ⚡ 极简使用指南
 
-本 Skill 既支持 **72h/96h 全流程自主攻坚**，也支持**单步按需精准调用**。在对话中输入对应快捷指令即可立即执行该阶段：
+### 1. 终端交互式启动向导 (Quickstart CLI)
+无需记忆指令，直接在终端中运行可视化操作菜单：
+```powershell
+python math-modeling/scripts/quickstart.py
+```
+
+---
+
+### 2. 五大场景化一键预设模式 (Scenario Presets)
+向 AI 发送对应指令，自动调整求解深度与执行策略：
+
+| 场景预设指令 | 适用场景 | 自动化策略与执行深度 |
+| :--- | :--- | :--- |
+| **`/mode contest`** | **72h/96h 正式竞赛** | **完整模式**：启动 CP0~CP5 全生命周期门控，严格执行数字冻结、1页摘要、18~25页论文、一键复跑与合规封箱。 |
+| **`/mode solve_only`** | **闪电解题与代码求解** | **纯算模式**：快速做问题拆解、推导公式、编写 Python 求解代码并输出图表与数据表，跳过长篇论文撰写。 |
+| **`/mode paper_only`** | **已有结果一键生成论文** | **写作模式**：读取已有代码、图表与数字，直接套用国赛/美赛 LaTeX 模板生成符合 18~25 页、1页三段式摘要的 PDF 论文。 |
+| **`/mode review_only`** | **论文与代码质量体检** | **质检模式**：深度审查已有论文与代码（模型匹配度、数字一致性、可复现性、匿名合规排查）。 |
+| **`/mode research`** | **前沿文献与参数定界** | **调研模式**：针对赛题自动检索 OpenAlex 权威文献，下载 OA PDF 全文，生成机理综述与参数基准表。 |
+
+---
+
+### 3. 模块化单步极简调用指令表（随时按需单步触发）
+当您仅需完成某一特定环节时，可直接发送快捷指令（如 `/topic`, `/audit`, `/solve`, `/validate`, `/paper`, `/pack`），AI 将精准进入对应阶段执行：
 
 | 快捷指令 | 阶段名 | 独立规范 | 核心输入 | 单步核心交付成果 |
 | :--- | :--- | :--- | :--- | :--- |
@@ -66,6 +90,11 @@ math-modeling-skill/
 | **`/validate`** | **4. 验证** | [`03_validate.md`](file:///f:/CodeworksF/skills/math-modeling/stages/03_validate.md) | 求解代码与结果 | 改装效果对照表、参数弹性 $S = \frac{x}{y}\frac{dy}{dx}$、DW自相关检验、`frozen_numbers.json` |
 | **`/paper`** | **5. 论文** | [`04_paper.md`](file:///f:/CodeworksF/skills/math-modeling/stages/04_paper.md) | 冻结数字、图表、结论 | 1 页三段式灵魂摘要、1 页目录、18~25 页正文的完整 LaTeX 源码与 PDF |
 | **`/pack`** | **6. 封箱** | [`05_pack.md`](file:///f:/CodeworksF/skills/math-modeling/stages/05_pack.md) | 论文 PDF、全量代码 | 干净环境一键复跑报告、匿名合规扫描、规范支撑材料包与 MD5 码 |
+
+### 4. 全局辅助与状态控制指令
+- **`/status`**：查看当前竞赛进度时钟、各子问题完成状态与已锁定的数字清单。
+- **`/resume`**：从最近一次中断或审批通过的 Checkpoint 节点无缝恢复继续。
+- **`/export`**：一键整理并导出符合国赛/美赛提交规范的 `支撑材料/` 压缩包。
 
 ---
 
