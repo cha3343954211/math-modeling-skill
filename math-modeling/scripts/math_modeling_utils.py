@@ -621,3 +621,116 @@ class VisualizationTool:
         print(f"[INFO] 折线图已保存: {path}")
         return path
 
+
+# ==========================================
+# 9. C题特色工具类（成分数据、线性化、供应链特征）
+# ==========================================
+
+class CompositionalDataTool:
+    """成分数据分析工具（适用于2022-C等化学成分/单形空间数据）"""
+
+    @staticmethod
+    def normalize_constant_sum(data: np.ndarray, target_sum: float = 100.0) -> np.ndarray:
+        """
+        均分误差法：将各样本成分累加和校正至常数 (如 100%)
+        """
+        data = np.asarray(data, dtype=float)
+        row_sums = np.sum(data, axis=-1, keepdims=True)
+        dim = data.shape[-1]
+        delta = (target_sum - row_sums) / dim
+        corrected = data + delta
+        print(f"[成分数据归一化] 已按均分误差校正 {data.shape[0]} 个样本至总和 {target_sum}%")
+        return corrected
+
+    @staticmethod
+    def clr_transform(data: np.ndarray, eps: float = 1e-6) -> np.ndarray:
+        """
+        中心对称对数比变换 (Centered Log-Ratio, CLR)
+        将有界单形空间映射至无界欧氏空间: y_ij = ln(x_ij) - (1/D) * sum(ln(x_ik))
+        """
+        data = np.asarray(data, dtype=float)
+        data = np.maximum(data, eps)  # 避免 log(0)
+        log_data = np.log(data)
+        geometric_mean = np.mean(log_data, axis=-1, keepdims=True)
+        clr_data = log_data - geometric_mean
+        print(f"[CLR 变换] 完成 {data.shape[0]} 个样本从单形空间到欧氏空间的流形映射")
+        return clr_data
+
+    @staticmethod
+    def inv_clr_transform(clr_data: np.ndarray, target_sum: float = 100.0) -> np.ndarray:
+        """
+        CLR 逆变换：从欧氏空间还原为成分百分比
+        """
+        clr_data = np.asarray(clr_data, dtype=float)
+        exp_data = np.exp(clr_data)
+        sum_exp = np.sum(exp_data, axis=-1, keepdims=True)
+        original_comp = (exp_data / sum_exp) * target_sum
+        return original_comp
+
+
+class OptimizationLinearizer:
+    """复杂优化与分段收益函数的精确线性化工具（适用于2024-C等连续规划问题）"""
+
+    @staticmethod
+    def explain_overproduction_linearization() -> str:
+        """
+        打印超产滞销/超产降价 50% 的精确线性化不等式规范
+        """
+        explanation = (
+            "【超产降价 50% 精确线性化规范】\n"
+            "目标函数: max P = sum_j [ p_j * Q_j - c_j * x_j ]\n"
+            "其中有效销量 Q_j = min(Y_j, S_j + 0.5 * R_j), 超产量 R_j = max(Y_j - S_j, 0)\n"
+            "等价转化为如下全套线性不等式组（无需使用非凸/启发式算法）：\n"
+            "  (1) Q_j <= Y_j              (有效销量不超过总产量)\n"
+            "  (2) Q_j <= S_j + 0.5 * R_j  (有效销量不超过额定销量 + 50%折扣超产销额)\n"
+            "  (3) R_j >= Y_j - S_j        (超产量下界约束)\n"
+            "  (4) R_j >= 0, Q_j >= 0      (非负约束)\n"
+        )
+        print(explanation)
+        return explanation
+
+
+class SupplierReliabilityTool:
+    """多周期供应链供货特征与可靠性量化工具（适用于2021-C等订购转运问题）"""
+
+    @staticmethod
+    def calc_supplier_metrics(order_matrix: np.ndarray, supply_matrix: np.ndarray) -> Dict[str, np.ndarray]:
+        """
+        计算各供应商的关键量化特征：供货均值、全周期贡献率、订货完成率、供货稳定性
+        order_matrix, supply_matrix: 形状为 (T_weeks, N_suppliers)
+        """
+        orders = np.asarray(order_matrix, dtype=float)
+        supplies = np.asarray(supply_matrix, dtype=float)
+        n_weeks, n_suppliers = orders.shape
+
+        # 1. 有效订货周数与供货均值
+        valid_orders_mask = (orders > 0)
+        n_valid_weeks = np.sum(valid_orders_mask, axis=0)
+        n_valid_weeks_safe = np.maximum(n_valid_weeks, 1)
+
+        total_supply = np.sum(supplies, axis=0)
+        mean_supply = total_supply / n_valid_weeks_safe
+
+        # 2. 全周期供货贡献率 (占全厂所有供货总量)
+        grand_total_supply = np.sum(supplies)
+        contribution_rate = total_supply / (grand_total_supply + 1e-9)
+
+        # 3. 订货完成率 (每次实际供货/订货量的均值 * 整体贡献比)
+        with np.errstate(divide='ignore', invalid='ignore'):
+            ratio_matrix = np.where(valid_orders_mask, supplies / orders, 0.0)
+        mean_ratio = np.sum(ratio_matrix, axis=0) / n_valid_weeks_safe
+        fulfillment_rate = contribution_rate * mean_ratio
+
+        # 4. 供货波动稳定性 (标准差)
+        diff_sq = np.where(valid_orders_mask, (supplies - mean_supply) ** 2, 0.0)
+        std_supply = np.sqrt(np.sum(diff_sq, axis=0) / n_valid_weeks_safe)
+
+        print(f"[供应链特征量化] 完成 {n_suppliers} 家供应商跨 {n_weeks} 周的可靠性指标计算")
+        return {
+            'mean_supply': mean_supply,
+            'contribution_rate': contribution_rate,
+            'fulfillment_rate': fulfillment_rate,
+            'std_supply': std_supply
+        }
+
+

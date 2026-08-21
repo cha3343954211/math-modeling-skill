@@ -230,8 +230,7 @@ metadata:
 | `references/latex_windows_patterns.md` | Windows LaTeX 环境检查与编译模式 | MiKTeX/TeXLive 环境排查时 |
 | `references/windows-latex-temp-compile-and-zip.md` | 中文路径下 LaTeX 稳健编译与打包 | 项目路径含中文/空格导致编译失败时 |
 | `references/visualization_guide.md` | 可视化规范+字体+图表命名 | 画图时 |
-| `references/windows_patterns.md` | Windows路径/字体/Excel读取 | 遇到环境问题时 |
-| `references/project_directory_and_packing_pitfalls.md` | 文件落盘与打包踩坑记录 | 建项目目录/打包交付时 |
+| `references/cumcm_c_problem_expert_handbook.md` | 国赛C题专家评审精要与真题解法全集 (2020~2025，含CLR转换与线性化) | 求解C题/数据驱动与运筹规划时 |
 | `references/supporting_materials_layout_v5_0.md` | 支撑材料目录结构（v5.0 精简版） | 打包交付时 |
 
 ### 案例参考（特定题型时加载）
